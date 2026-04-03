@@ -1,0 +1,4 @@
+{
+  "nx.enableDaemon": false,
+  "nx.runTasksInTerminal": false
+}
