@@ -9,7 +9,8 @@
     "serve:product": "npx nx serve @eshop/product-service",
     "user-ui": "cd apps/user-ui && npm run dev",
     "seller-ui": "cd apps/seller-ui && npm run dev",
-    "auth-docs": "node apps/auth-service/src/swagger.js"
+    "auth-docs": "node apps/auth-service/src/swagger.js",
+    "product-docs": "node apps/product-service/src/swagger.js"
   },
   "private": true,
   "dependencies": {
@@ -29,6 +30,7 @@
     "lucide-react": "^1.7.0",
     "morgan": "^1.10.1",
     "next": "~16.1.6",
+    "node-cron": "^4.2.1",
     "nodemailer": "^8.0.1",
     "prisma": "^5.22.0",
     "react": "^19.0.0",

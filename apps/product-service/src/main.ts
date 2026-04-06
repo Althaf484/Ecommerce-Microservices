@@ -1,9 +1,13 @@
 import express from "express";
+import "./jobs/project-crone.job";
+import "./jobs/project-crone.job";
+
 import cors from "cors";
 import { errorMiddleware } from "@packages/error-handler/error-middleware";
 import cookieParser from "cookie-parser";
-// import swaggerUi from "swagger-ui-express";
-// const swaggerDocument = require("./swagge-output.json");
+import router from "./routes/product.route";
+import swaggerUi from "swagger-ui-express";
+const swaggerDocument = require("./swagge-output.json");
 
 const app = express();
 
@@ -22,13 +26,13 @@ app.get("/", (req, res) => {
   res.send({ message: "Hello Product API" });
 });
 
-// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// app.get("docs-json", (req, res) => {
-//   res.json(swaggerDocument);
-// });
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get("docs-json", (req, res) => {
+  res.json(swaggerDocument);
+});
 
 //Routes
-// app.use("/api", router);
+app.use("/api", router);
 
 app.use(errorMiddleware);
 
