@@ -106,8 +106,10 @@ export const loginUser = async (
       throw new AuthError("Invalid email or password!");
     }
 
-    //Generate access and refresh tokrn
+    res.clearCookie("seller-access-token");
+    res.clearCookie("seller-refresh-token");
 
+    //Generate access and refresh tokrn
     const accessToken = jwt.sign(
       { id: user.id, role: "user" },
       process.env.ACCESS_TOKEN_SECRET as string,
@@ -141,7 +143,11 @@ export const refreshToken = async (
   next: NextFunction,
 ) => {
   try {
-    const refreshToken = req.cookies.refresh_token;
+    const refreshToken =
+      req.cookies["refresh_token"] ||
+      req.cookies["seller-refresh-token"] ||
+      req.headers.authorization?.split(" ")[1];
+
     if (!refreshToken) {
       throw new AuthError("No refresh token provided!");
     }
@@ -155,23 +161,33 @@ export const refreshToken = async (
       throw new JsonWebTokenError("Invalid refresh token!");
     }
 
-    // let account;
-    // if(decoded.role === "user"){
-    const user = await prisma.users.findUnique({
-      where: { id: String(decoded.id) },
-    });
+    let account;
+    if (decoded.role === "user") {
+      account = await prisma.users.findUnique({
+        where: { id: String(decoded.id) },
+      });
+    } else if (decoded.role === "seller") {
+      account = await prisma.sellers.findUnique({
+        where: { id: String(decoded.id) },
+        include: { shop: true },
+      });
+    }
 
-    if (!user) {
+    if (!account) {
       throw new AuthError("User/Seller not found!");
     }
 
     const newAccessToken = jwt.sign(
-      { id: user.id, role: decoded.role },
+      { id: account.id, role: decoded.role },
       process.env.ACCESS_TOKEN_SECRET as string,
       { expiresIn: "15m" },
     );
 
-    setCookie(res, "access_token", newAccessToken);
+    if (decoded.role === "user") {
+      setCookie(res, "access_token", newAccessToken);
+    } else if (decoded.role === "seller") {
+      setCookie(res, "seller-access-token", newAccessToken);
+    }
 
     res.status(200).json({
       success: true,
@@ -261,7 +277,6 @@ export const registerSeller = async (
   next: NextFunction,
 ) => {
   try {
-
     validateRegistrationData(req.body, "seller");
     const { name, email } = req.body;
 
@@ -275,7 +290,7 @@ export const registerSeller = async (
     await checkOtpRestrictions(email, next);
     await trackOtpRequests(email, next);
     await sendOtp(name, email, "seller-activation-mail");
-    
+
     res
       .status(200)
       .json({ message: "OTP sent to email. Please verify your account." });
@@ -378,7 +393,6 @@ export const createStripeConnectLink = async (
   //   if (!sellerId) {
   //     return next(new ValidationError("Seller ID is required"));
   //   }
-
   //   const seller = await prisma.sellers.findUnique({
   //     where: {
   //       id: sellerId,
@@ -387,7 +401,6 @@ export const createStripeConnectLink = async (
   //   if (!seller) {
   //     return next(new ValidationError("Seller is not available with this id"));
   //   }
-
   //   const account = await stripe.accounts.create({
   //     type: "express",
   //     email: seller?.email,
@@ -397,7 +410,6 @@ export const createStripeConnectLink = async (
   //       transfers: { requested: true },
   //     },
   //   });
-
   //   await prisma.sellers.update({
   //     where: {
   //       id: sellerId,
@@ -406,14 +418,12 @@ export const createStripeConnectLink = async (
   //       stripeId: account.id,
   //     },
   //   });
-
   //   const accountLink = await stripe.accountLinks.create({
   //     account: account.id,
   //     refresh_url: `http://localhost:3000/success`,
   //     return_url: `http://localhost:3000/success`,
   //     type: "account_onboarding",
   //   });
-
   //   res.json({ url: accountLink.url });
   // } catch (error) {
   //   return next(error);
@@ -444,6 +454,9 @@ export const loginSeller = async (
     if (!isMatch) {
       return next(new ValidationError("Invalid email or password"));
     }
+
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
 
     //generate refresh and access tokens
     const accessToken = jwt.sign(

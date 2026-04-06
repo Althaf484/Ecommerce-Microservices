@@ -1,4 +1,4 @@
-import SidebarWrapper from "apps/seller-ui/src/shared/components/sidebar/sidebar";
+import Sidebar from "apps/seller-ui/src/shared/components/sidebar/sidebar";
 import React from "react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* Sidebar */}
       <aside className="w-[280px] min-w-[250px] max-w-[300px] border-r border-r-slate-800 text-white p-4">
         <div className="sticky top-0">
-          <SidebarWrapper />
+          <Sidebar />
         </div>
       </aside>
 

@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently \"npm:serve:auth\" \"npm:serve:api\" \"npm:user-ui\" \"npm:seller-ui\"",
+    "dev": "concurrently \"npm:serve:auth\" \"npm:serve:api\" \"npm:user-ui\" \"npm:seller-ui\" \"npm:serve:product\"",
     "serve:auth": "npx nx serve auth-service",
     "serve:api": "npx nx serve @eshop/api-gateway",
+    "serve:product": "npx nx serve @eshop/product-service",
     "user-ui": "cd apps/user-ui && npm run dev",
     "seller-ui": "cd apps/seller-ui && npm run dev",
     "auth-docs": "node apps/auth-service/src/swagger.js"
@@ -42,7 +43,7 @@
   "devDependencies": {
     "@nx/docker": "^22.6.4",
     "@nx/esbuild": "^22.6.4",
-    "@nx/express": "^22.5.1",
+    "@nx/express": "22.6.4",
     "@nx/jest": "^22.6.4",
     "@nx/js": "22.6.4",
     "@nx/next": "^22.6.4",
