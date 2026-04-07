@@ -104,7 +104,7 @@ enum productStatus {
 }
 
 model products {
-    id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   title String
   slug String @unique
   category String
@@ -135,4 +135,5 @@ model products {
   updatedAt DateTime @updatedAt
   shopId String @db.ObjectId
   shop shops @relation(fields: [shopId], references: [id])
+  totalSales  Int      @default(0)
 }

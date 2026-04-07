@@ -4,8 +4,10 @@ import {
   createProduct,
   deleteDiscountCode,
   deleteProduct,
+  getAllProducts,
   getCategories,
   getDiscountCodes,
+  getProductDetails,
   getShopProducts,
   restoreProduct,
 } from "../controllers/product.controller";
@@ -31,7 +33,19 @@ router.delete(
 );
 router.post("/create-product", isAuthenticated, isSeller, createProduct);
 router.post("/get-shop-products", isAuthenticated, isSeller, getShopProducts);
-router.delete("/delete-product/:productId", isAuthenticated, isSeller, deleteProduct);
-router.put("/restore-product/:productId", isAuthenticated, isSeller, restoreProduct);
+router.delete(
+  "/delete-product/:productId",
+  isAuthenticated,
+  isSeller,
+  deleteProduct,
+);
+router.put(
+  "/restore-product/:productId",
+  isAuthenticated,
+  isSeller,
+  restoreProduct,
+);
+router.get("/get-all-products", getAllProducts);
+router.get("/get-product/:slug", getProductDetails);
 
 export default router;
