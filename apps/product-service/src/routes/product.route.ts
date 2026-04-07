@@ -4,12 +4,18 @@ import {
   createProduct,
   deleteDiscountCode,
   deleteProduct,
+  getAllEvents,
   getAllProducts,
   getCategories,
   getDiscountCodes,
+  getFilteredEvents,
+  getFilteredProducts,
+  getFilteredShops,
   getProductDetails,
   getShopProducts,
   restoreProduct,
+  searchProducts,
+  topShops,
 } from "../controllers/product.controller";
 import isAuthenticated from "@packages/middleware/isAuthenticated";
 import { isSeller } from "@packages/middleware/authorizeRoles";
@@ -46,6 +52,14 @@ router.put(
   restoreProduct,
 );
 router.get("/get-all-products", getAllProducts);
+router.get("/get-all-events", getAllEvents);
 router.get("/get-product/:slug", getProductDetails);
+router.get("/get-product/:slug", getProductDetails);
+router.get("/get-filtered-products", getFilteredProducts);
+router.get("/get-filtered-offers", getFilteredEvents);
+router.get("/get-filtered-shops", getFilteredShops);
+router.get("/search-products", searchProducts);
+router.get("/top-shops", topShops);
+router.get("/top-shops", topShops);
 
 export default router;
