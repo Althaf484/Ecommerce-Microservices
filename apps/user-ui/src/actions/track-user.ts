@@ -1,27 +1,27 @@
-"use server"
-import {kafka} "@packages/utils/kafka";
+// "use server"
+// import {kafka} "@packages/utils/kafka";
 
-const producer = kafka.producer();
+// const producer = kafka.producer();
 
-export async function sendKafkaEvent(eventData: {
-    userId?: string;
-    productId?: string;
-    shopId?: string;
-    action: string;
-    device?: string;
-    country?: string;
-    city?: string;
-}) {
-    try {
-        await producer.connect();
-        await producer.send({
-            topic: "users-events",
-            messages: [{ value: JSON.stringify(eventData) }],
-        });
+// export async function sendKafkaEvent(eventData: {
+//     userId?: string;
+//     productId?: string;
+//     shopId?: string;
+//     action: string;
+//     device?: string;
+//     country?: string;
+//     city?: string;
+// }) {
+//     try {
+//         await producer.connect();
+//         await producer.send({
+//             topic: "users-events",
+//             messages: [{ value: JSON.stringify(eventData) }],
+//         });
         
-    } catch (error) {
-        console.log("Error sending event", error);
-    } finally {
-        await producer.disconnect();
-    }
-}
+//     } catch (error) {
+//         console.log("Error sending event", error);
+//     } finally {
+//         await producer.disconnect();
+//     }
+// }

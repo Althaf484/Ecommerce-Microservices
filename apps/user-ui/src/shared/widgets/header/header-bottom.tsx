@@ -10,10 +10,13 @@ import {
 } from "lucide-react";
 import { navItems } from "../../../configs/constants";
 import useUser from "apps/user-ui/src/hooks/useUser";
+import { useStore } from "apps/user-ui/src/store";
 
 const HeaderBottom = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+  const wishlist = useStore((state: any) => state.wishlist);
+  const cart = useStore((state: any) => state.cart);
 
   const { user, isLoading } = useUser();
 
@@ -118,7 +121,7 @@ const HeaderBottom = () => {
               <Link href="/wishlist" className="relative hover:text-gray-700">
                 <Heart size={20} />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                  0
+                  {wishlist?.length}
                 </span>
               </Link>
 
@@ -126,7 +129,7 @@ const HeaderBottom = () => {
               <Link href="/cart" className="relative hover:text-gray-700">
                 <ShoppingCart size={20} />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                  9
+                  {cart?.length}
                 </span>
               </Link>
             </div>

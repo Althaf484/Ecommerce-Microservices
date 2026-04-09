@@ -1,6 +1,7 @@
 "use client";
 import ImagePlaceHolder from "apps/seller-ui/src/shared/components/image-placeholder";
 import { ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -63,7 +64,12 @@ const page = () => {
         Create Product
       </h2>
       <div className="flex items-center">
-        <span className="flex text-[#80deea] cursor-pointer">Dashboard</span>
+        <Link
+          href={"/dashboard"}
+          className="flex text-[#80deea] cursor-pointer"
+        >
+          Dashboard
+        </Link>
         <ChevronRightIcon size={20} className="opacity-[.8]" />
         <span>Create Product</span>
       </div>
@@ -85,7 +91,6 @@ const page = () => {
         </div>
         <div className="grid grid-cols-2 gap-3 mt-4">
           {images.slice(0).map((_, index) => (
-            
             <ImagePlaceHolder
               setOpenImageModal={setOpenImageModal}
               size="765 x 850"

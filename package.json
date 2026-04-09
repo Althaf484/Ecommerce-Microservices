@@ -42,6 +42,7 @@
     "stripe": "^22.0.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1",
+    "ua-parser-js": "^2.0.9",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
