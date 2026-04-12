@@ -74,181 +74,185 @@ const ProductDetailscard = ({
               ))}
             </div>
           </div>
-          <div className="w-full md:w-1/2 md:pl-8 mt-6 md:mt-0">
+
+          <div className="w-full md:w-1/2 md:pl-8 mt-6 md:mt-0 relative">
             {/* Seller Info */}
-            <div className="border-b relative pb-3 border-gray-200 flex items-center justify-between">
-              <div className="flex items-start gap-3">
-                {/* Shop Logo */}
-                <Image
-                  src={data?.shop?.avatar}
-                  alt="Shop Logo"
-                  width={60}
-                  height={60}
-                  className="rounded-full w-[60px] h-[60px] object-cover"
-                />
-                <div>
-                  <Link
-                    href={`/shop/${data?.shop?.id}`}
-                    className="text-lg font-medium"
-                  >
-                    {data?.shop?.name}
-                  </Link>
+            <div className="flex justify-between items-center">
+              <div className="border-b relative pb-3 border-gray-200 flex items-center justify-between">
+                <div className="flex items-start gap-3">
+                  {/* Shop Logo */}
+                  <Image
+                    src={data?.shop?.avatar || ""}
+                    alt="Shop Logo"
+                    width={60}
+                    height={60}
+                    className="rounded-full w-[60px] h-[60px] object-cover"
+                  />
+                  <div>
+                    <Link
+                      href={`/shop/${data?.shop?.id}`}
+                      className="text-lg font-medium"
+                    >
+                      {data?.shop?.name}
+                    </Link>
+
+                    {/* Shop Ratings */}
+                    <span className="block mt-1">
+                      <Ratings rating={data?.shop?.ratings} />
+                    </span>
+
+                    {/* Shop Location */}
+                    <p className="text-gray-600 mt-1 flex items-center gap-4">
+                      <MapPin size={20} />
+                      {data?.shop?.address || "Location Not Available"}
+                    </p>
+                  </div>
                 </div>
-
-                {/* Shop Ratings */}
-                <span className="block mt-1">
-                  <Ratings rating={data?.shop?.ratings} />
-                </span>
-
-                {/* Shop Location */}
-                <p className="text-gray-600 mt-1 flex items-center gap-4">
-                  <MapPin size={20} />
-                  {data?.shop?.address || "Location Not Available"}
-                </p>
               </div>
+
+              {/* Chat With Seller Button */}
+              <button
+                className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                onClick={() => router.push(`/inbox?shopId=${data?.shop?.id}`)}
+              >
+                Chat With Seller
+              </button>
+              <button className="w-full absolute cursor-pointer right-[-5px] top-[-5px] flex justify-end my-2 mt-[-10px]">
+                <X size={25} onClick={() => setOpen(false)} />
+              </button>
             </div>
-
-            {/* Chat With Seller Button */}
-            <button
-              className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium"
-              onClick={() => router.push(`/inbox?shopId=${data?.shop?.id}`)}
-            >
-              Chat With Seller
-            </button>
-
-            <button className="w-full absolute cursor-pointer right-[-5px] top-[-5px] flex justify-end my-2 mt-[-10px]">
-              <X size={25} onClick={() => setOpen(false)} />
-            </button>
-          </div>
-          <h3 className="text-xl font-semibold mt-3">{data?.title}</h3>
-          <p className="mt-2 text-gray-700 whitespace-pre-wrap w-full">
-            {data?.short_description}
-          </p>
-          {/* Brand */}
-          {data?.brand && (
-            <p className="mt-2">
-              <strong>Brand:</strong> {data?.brand}
+            <h3 className="text-xl font-semibold mt-3">{data?.title}</h3>
+            <p className="mt-2 text-gray-700 whitespace-pre-wrap w-full">
+              {data?.short_description}
             </p>
-          )}
-          {/* Color and size selection */}
-          <div className="flex flex-col md:flex-row items-start gap-5 mt-4">
-            {data?.colors?.length > 0 && (
-              <div>
-                <strong>Color:</strong>
-                <div className="flex gap-2 mt-1">
-                  {data.colors.map((color: string, index: number) => (
-                    <button
-                      key={index}
-                      className={`w-8 h-8 cursor-pointer rounded-full border-2 transition
+            {/* Brand */}
+            {data?.brand && (
+              <p className="mt-2">
+                <strong>Brand:</strong> {data?.brand}
+              </p>
+            )}
+            {/* Color and size selection */}
+            <div className="flex flex-col md:flex-row items-start gap-5 mt-4">
+              {data?.colors?.length > 0 && (
+                <div>
+                  <strong>Color:</strong>
+                  <div className="flex gap-2 mt-1">
+                    {data.colors.map((color: string, index: number) => (
+                      <button
+                        key={index}
+                        className={`w-8 h-8 cursor-pointer rounded-full border-2 transition
                                 ${isSelected === color ? "border-gray-400 scale-110 shadow-md" : "border-transparent"}`}
-                      onClick={() => setIsSelected(color)}
-                      style={{ backgroundColor: color }}
-                    ></button>
-                  ))}
+                        onClick={() => setIsSelected(color)}
+                        style={{ backgroundColor: color }}
+                      ></button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {data?.sizes?.length > 0 && (
-              <div>
-                <strong>Size:</strong>
-                <div className="flex gap-2 mt-1">
-                  {data.sizes.map((size: string, index: number) => (
-                    <button
-                      key={index}
-                      className={`px-4 py-1 cursor-pointer rounded-md border-2 transition
-                                ${isSizeSelected === size ? "border-gray-800 text-white" : "border-gray-300 text-black"}`}
-                      onClick={() => setIsSizeSelected(size)}
-                    ></button>
-                  ))}
+              {data?.sizes?.length > 0 && (
+                <div>
+                  <strong>Size:</strong>
+                  <div className="flex gap-2 mt-1">
+                    {data.sizes.map((size: string, index: number) => (
+                      <button
+                        key={index}
+                        className={`px-4 py-1 cursor-pointer rounded-md border-2 transition
+                                ${isSizeSelected === size ? "border-gray-300 bg-gray-800 text-white" : "border-gray-300 bg-white text-black"}`}
+                        onClick={() => setIsSizeSelected(size)}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-          {/* Price Section */}
-          <div className="mt-5 flex items-center gap-4">
-            <h3 className="text-2xl font-semibold text-gray-900">
-              ${data?.sale_price}
-            </h3>
-            {data?.regular_price && (
-              <h3 className="text-lg text-red-600 line-through">
-                ${data?.regular_price}
+              )}
+            </div>
+            {/* Price Section */}
+            <div className="mt-5 flex items-center gap-4">
+              <h3 className="text-2xl font-semibold text-gray-900">
+                ${data?.sale_price}
               </h3>
-            )}
-          </div>
-          <div className="mt-5 flex items-center gap-5">
-            <div className="flex items-center rounded-md">
+              {data?.regular_price && (
+                <h3 className="text-lg text-red-600 line-through">
+                  ${data?.regular_price}
+                </h3>
+              )}
+            </div>
+            <div className="mt-5 flex items-center gap-5">
+              <div className="flex items-center rounded-md">
+                <button
+                  className="px-3 cursor-pointer py-1 bg-gray-300 hover:bg-gray-400"
+                  onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                >
+                  -
+                </button>
+                <span className="px-4 bg-gray-100 py-1">{quantity}</span>
+                <button
+                  className="px-3 cursor-pointer py-1 bg-gray-300 hover:bg-gray-400"
+                  onClick={() => setQuantity((prev) => prev + 1)}
+                >
+                  +
+                </button>
+              </div>
               <button
-                className="px-3 cursor-pointer py-1 bg-gray-300 hover:bg-gray-400"
-                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                disabled={isInCart}
+                onClick={() =>
+                  addToCart(
+                    {
+                      ...data,
+                      quantity,
+                      selectedOptions: {
+                        color: isSelected,
+                        size: isSizeSelected,
+                      },
+                    },
+                    user,
+                    location,
+                    deviceInfo,
+                  )
+                }
+                className={`flex items-center gap-2 px-4 py-2 bg-[#ff5722] hover:bg-[#e64a19] text-white font-medium rounded-lg transition ${isInCart ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
               >
-                -
+                <ShoppingCart size={18} />
+                Add to Cart
               </button>
-              <span className="px-4 bg-gray-100 py-1">{quantity}</span>
-              <button
-                className="px-3 cursor-pointer py-1 bg-gray-300 hover:bg-gray-400"
-                onClick={() => setQuantity((prev) => prev - 1)}
-              >
-                +
+              <button className="opacity-[.7] cursor-pointer">
+                <Heart
+                  size={30}
+                  fill={isWishlisted ? "red" : "transparent"}
+                  color={isWishlisted ? "transparent" : "black"}
+                  onClick={() =>
+                    isWishlisted
+                      ? removeFromWishlist(data.id, user, location, deviceInfo)
+                      : addToWishlist(
+                          {
+                            ...data,
+                            quantity,
+                            selectedOptions: {
+                              color: isSelected,
+                              size: isSizeSelected,
+                            },
+                          },
+                          user,
+                          location,
+                          deviceInfo,
+                        )
+                  }
+                />
               </button>
             </div>
-            <button
-              disabled={isInCart}
-              onClick={() =>
-                addToCart(
-                  {
-                    ...data,
-                    quantity,
-                    selectedOptions: {
-                      color: isSelected,
-                      size: isSizeSelected,
-                    },
-                  },
-                  user,
-                  location,
-                  deviceInfo,
-                )
-              }
-              className={`flex items-center gap-2 px-4 py-2 bg-[#ff5722] hover:bg-[#e64a19] text-white font-medium rounded-lg transition ${isInCart ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-            >
-              <ShoppingCart size={18} />
-              Add to Cart
-            </button>
-            <button className="opacity-[.7] cursor-pointer">
-              <Heart
-                size={30}
-                fill={isWishlisted ? "red" : "transparent"}
-                color={isWishlisted ? "transparent" : "black"}
-                onClick={() =>
-                  isWishlisted
-                    ? removeFromWishlist(data.id, user, location, deviceInfo)
-                    : addToWishlist(
-                        {
-                          ...data,
-                          quantity,
-                          selectedOptions: {
-                            color: isSelected,
-                            size: isSizeSelected,
-                          },
-                        },
-                        user,
-                        location,
-                        deviceInfo,
-                      )
-                }
-              />
-            </button>
-          </div>
-          <div className="mt-3">
-            {data?.stock > 0 ? (
-              <span className="text-green-600 font-semibold">In Stock</span>
-            ) : (
-              <span className="text-red-600 font-semibold">Out of Stock</span>
-            )}
-          </div>{" "}
-          <div className="mt-3 text-gray-600 text-sm">
-            Estimated Delivery:{" "}
-            <strong>{estimatedDelivery.toDateString()}</strong>
+            <div className="mt-3">
+              {data?.stock > 0 ? (
+                <span className="text-green-600 font-semibold">In Stock</span>
+              ) : (
+                <span className="text-red-600 font-semibold">Out of Stock</span>
+              )}
+            </div>{" "}
+            <div className="mt-3 text-gray-600 text-sm">
+              Estimated Delivery:{" "}
+              <strong>{estimatedDelivery.toDateString()}</strong>
+            </div>
           </div>
         </div>
       </div>

@@ -9,11 +9,7 @@ import {
   verifyOtp,
 } from "../utils/auth.helper";
 import prisma from "@packages/libs/prisma";
-import {
-  AuthError,
-  NotFoundError,
-  ValidationError,
-} from "@packages/error-handler";
+import { AuthError, ValidationError } from "@packages/error-handler";
 import bcrypt from "bcryptjs";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { setCookie } from "../utils/cookies/setCookie";
@@ -505,114 +501,114 @@ export const getSeller = async (
 };
 
 // add new address
-export const addUserAddress = async (
-  req: any,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user?.id;
-    const { label, name, street, city, zip, country, isDefault } = req.body;
+// export const addUserAddress = async (
+//   req: any,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const userId = req.user?.id;
+//     const { label, name, street, city, zip, country, isDefault } = req.body;
 
-    if (!label || !name || !street || !city || !zip || !country) {
-      return next(new ValidationError("Missing required fields!"));
-    }
+//     if (!label || !name || !street || !city || !zip || !country) {
+//       return next(new ValidationError("Missing required fields!"));
+//     }
 
-    if (isDefault) {
-      await prisma.address.updateMany({
-        where: {
-          userId,
-          isDefault: true,
-        },
-        data: {
-          isDefault: false,
-        },
-      });
-    }
+//     if (isDefault) {
+//       await prisma.address.updateMany({
+//         where: {
+//           userId,
+//           isDefault: true,
+//         },
+//         data: {
+//           isDefault: false,
+//         },
+//       });
+//     }
 
-    const newAddress = await prisma.addresses.create({
-      data: {
-        userId,
-        label,
-        name,
-        street,
-        city,
-        zip,
-        country,
-        isDefault,
-      },
-    });
+//     const newAddress = await prisma.addresses.create({
+//       data: {
+//         userId,
+//         label,
+//         name,
+//         street,
+//         city,
+//         zip,
+//         country,
+//         isDefault,
+//       },
+//     });
 
-    res.status(201).json({
-      success: true,
-      address: newAddress,
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
+//     res.status(201).json({
+//       success: true,
+//       address: newAddress,
+//     });
+//   } catch (error) {
+//     return next(error);
+//   }
+// };
 
 // delete user address
-export const deleteUserAddress = async (
-  req: any,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user?.id;
-    const addressId = req.params.id;
+// export const deleteUserAddress = async (
+//   req: any,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const userId = req.user?.id;
+//     const addressId = req.params.id;
 
-    if (!addressId) {
-      return next(new ValidationError("Address ID is required"));
-    }
+//     if (!addressId) {
+//       return next(new ValidationError("Address ID is required"));
+//     }
 
-    const existingAddress = await prisma.address.findFirst({
-      where: {
-        id: addressId,
-        userId,
-      },
-    });
+//     const existingAddress = await prisma.address.findFirst({
+//       where: {
+//         id: addressId,
+//         userId,
+//       },
+//     });
 
-    if (!existingAddress) {
-      return next(new NotFoundError("Address not found"));
-    }
+//     if (!existingAddress) {
+//       return next(new NotFoundError("Address not found"));
+//     }
 
-    await prisma.address.delete({
-      where: {
-        id: addressId,
-      },
-    });
+//     await prisma.address.delete({
+//       where: {
+//         id: addressId,
+//       },
+//     });
 
-    res.status(200).json({
-      success: true,
-      message: "Address deleted successfully",
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
+//     res.status(200).json({
+//       success: true,
+//       message: "Address deleted successfully",
+//     });
+//   } catch (error) {
+//     return next(error);
+//   }
+// };
 
 // get user addresses
-export const getUserAddresses = async (
-  req: any,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user?.id;
-    const addresses = await prisma.address.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    res.status(200).json({
-      success: true,
-      addresses,
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
+// export const getUserAddresses = async (
+//   req: any,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const userId = req.user?.id;
+//     const addresses = await prisma.address.findMany({
+//       where: {
+//         userId,
+//       },
+//       orderBy: {
+//         createdAt: "desc",
+//       },
+//     });
+//     res.status(200).json({
+//       success: true,
+//       addresses,
+//     });
+//   } catch (error) {
+//     return next(error);
+//   }
+// };

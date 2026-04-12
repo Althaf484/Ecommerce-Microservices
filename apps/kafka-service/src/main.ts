@@ -1,4 +1,5 @@
 import {kafka} from "@packages/utils/kafka";
+import { updateUserAnalytics } from "./services/analytics.service";
 
 
 const consumer = kafka.consumer({ groupId: 'user-events-group' });
@@ -37,7 +38,7 @@ const processQueue = async () => {
 setInterval(processQueue, 3000);
 
 //kafka consumer for user events
-export const consumerKafkaMessages = async () => {
+export const consumeKafkaMessages = async () => {
   // connect to the kafka broker
   await consumer.connect();
   // subscribe to the topic
@@ -52,4 +53,4 @@ export const consumerKafkaMessages = async () => {
   });
 }
 
-consumerKafkaMessages().catch(console.error);
+consumeKafkaMessages().catch(console.error);

@@ -2,6 +2,7 @@ import Header from "../shared/widgets/header";
 import { Poppins, Roboto } from "next/font/google";
 import "./global.css";
 import Providers from "./providers";
+import Footer from "../shared/widgets/footer";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ export default function RootLayout({
         <Providers>
           <Header />
           {children}
-          <div className="min-h-screen"></div>
+          <Footer />
         </Providers>
       </body>
     </html>

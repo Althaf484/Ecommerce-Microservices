@@ -1,5 +1,5 @@
 import axios from "axios";
-import { error } from "console";
+
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URI,

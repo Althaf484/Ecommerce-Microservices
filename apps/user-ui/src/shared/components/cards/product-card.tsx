@@ -104,7 +104,7 @@ const ProductCard = ({
           </span>
         </div>
         <span className="text-green-500 text-sm font-medium">
-          ${product?.totalSales} sold
+          {product?.totalSales} sold
         </span>
       </div>
 

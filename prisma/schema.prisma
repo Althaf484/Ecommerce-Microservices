@@ -127,7 +127,7 @@ model products {
   custom_specifications Json?
   custom_properties Json
   isDeleted Boolean? @default(false)
-  cashOnDelivery String?
+  cashOnDelivery Boolean @default(false)
   discount_codes String[] @db.ObjectId
   status productStatus @default(Active)
   deletedAt DateTime?

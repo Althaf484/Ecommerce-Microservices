@@ -37,15 +37,12 @@ export const updateUserAnalytics = async (event: any) => {
         action: event?.action,
         timestamp: new Date(),
       });
-    } else if (["remove_from_cart"].includes(event.action) && actionExists) {
+    } else if (event.action === "remove_fom_cart") {
       updatedActions = updatedActions.filter(
         (entry: any) =>
           entry.productId === event.productId || entry.action === "add_to_cart",
       );
-    } else if (
-      ["remove_from_wishlist"].includes(event.action) &&
-      actionExists
-    ) {
+    } else if (event.action === "remove_from_wishlist") {
       updatedActions = updatedActions.filter(
         (entry: any) =>
           entry.productId === event.productId ||
@@ -74,7 +71,7 @@ export const updateUserAnalytics = async (event: any) => {
 
     // update or create analytics
     await prisma.userAnalytics.upsert({
-      where: { userId: event.userId },
+      where: { userId: event?.userId },
       update: {
         lastVisited: new Date(),
         actions: updatedActions,

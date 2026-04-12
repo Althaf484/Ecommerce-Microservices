@@ -1,12 +1,12 @@
 import express, { Router } from "express";
 import {
-  addUserAddress,
+  // addUserAddress,
   createShop,
   createStripeConnectLink,
-  deleteUserAddress,
+  // deleteUserAddress,
   getSeller,
   getUser,
-  getUserAddresses,
+  // getUserAddresses,
   loginSeller,
   loginUser,
   refreshToken,
@@ -37,9 +37,9 @@ router.post("/create-shop", createShop);
 router.post("/create-stripe-link", createStripeConnectLink);
 router.post("/login-seller", loginSeller);
 router.get("/logged-in-seller", isAuthenticated, isSeller, getSeller);
-router.get("/get-shipping-addresses", isAuthenticated, getUserAddresses);
+// router.get("/get-shipping-addresses", isAuthenticated, getUserAddresses);
 
-router.post("/add-address", isAuthenticated, addUserAddress);
-router.delete("/delete-address/:addressId", isAuthenticated, deleteUserAddress);
+// router.post("/add-address", isAuthenticated, addUserAddress);
+// router.delete("/delete-address/:addressId", isAuthenticated, deleteUserAddress);
 
 export default router;

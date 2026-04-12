@@ -195,7 +195,7 @@ export const createProduct = async (
         category,
         colors: colors || [],
         sizes: sizes || [],
-        discount_codes: discountCodes.mpa((codeId: string) => codeId),
+        discount_codes: discountCodes?.map((codeId: string) => codeId) || [],
         stock: parseInt(stock),
         sale_price: parseFloat(sale_price),
         regular_price: parseFloat(regular_price),
@@ -344,14 +344,15 @@ export const getAllProducts = async (
     const skip = (page - 1) * limit;
     const type = req.query.type as string;
 
-    const baseFilter = {
+    const baseFilter: Prisma.productsWhereInput = {
       OR: [
-        {
-          starting_date: null,
-        },
+        { starting_date: null },
         { ending_date: null },
+        { starting_date: { isSet: false } }, // important
+        { ending_date: { isSet: false } }, // important
       ],
     };
+
     const orderBy: Prisma.productsOrderByWithRelationInput =
       type === "latest"
         ? { createdAt: "desc" as Prisma.SortOrder }
@@ -377,6 +378,7 @@ export const getAllProducts = async (
         orderBy,
       }),
     ]);
+    console.log(products);
 
     res.status(200).json({
       products,
@@ -407,14 +409,14 @@ export const getAllEvents = async (
     };
 
     const [events, total, top10BySales] = await Promise.all([
-      prisma.events.findMany({
+      prisma.products.findMany({
         skip,
         take: limit,
         where: baseFilter,
 
         include: {
           images: true,
-          Shop: true,
+          shop: true,
         },
         orderBy: {
           totalSales: "desc",
@@ -425,7 +427,7 @@ export const getAllEvents = async (
         where: baseFilter,
         take: 10,
         orderBy: { totalSales: "desc" },
-      })
+      }),
     ]);
 
     res.status(200).json({
@@ -434,7 +436,7 @@ export const getAllEvents = async (
       total,
       currentpage: page,
       totalPages: Math.ceil(total / limit),
-    })
+    });
   } catch (error) {
     return next(error);
   }
@@ -497,7 +499,10 @@ export const getFilteredProducts = async (
         gte: parsedPriceRange[0],
         lte: parsedPriceRange[1],
       },
-      starting_date: null,
+      OR: [
+        { starting_date: null },
+        { starting_date: { isSet: false } }, // field does not exist (MongoDB only)
+      ],
     };
 
     if (categories && (categories as string[]).length > 0) {
@@ -671,7 +676,7 @@ export const getFilteredShops = async (
         take: parsedLimit,
         include: {
           sellers: true,
-          followers: true,
+          // followers: true, //to do remove now because of error there is no followers in shop schema
           products: true,
         },
       }),
@@ -742,6 +747,7 @@ export const searchProducts = async (
 };
 
 // get top Shops
+//todo in here fix the order schema
 export const topShops = async (
   req: Request,
   res: Response,
