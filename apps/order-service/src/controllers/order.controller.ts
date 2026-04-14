@@ -5,7 +5,8 @@ import Stripe from "stripe";
 import crypto from "crypto";
 import prisma from "@packages/libs/prisma";
 import { sendEmail } from "../utils/send-email";
-import { error } from "console";
+import { timeStamp } from "console";
+import { Prisma } from "@prisma/client";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-02-24.acacia",
@@ -288,6 +289,65 @@ export const createOrder: RequestHandler = async (
             },
           },
         });
+
+        // update product & analytics
+        for (const item of orderItems) {
+          const { id: productId, quantity } = item;
+
+          await prisma.products.update({
+            where: { id: productId },
+            data: {
+              stock: { decrement: quantity },
+              totalSales: { increment: quantity },
+            },
+          });
+
+          await prisma.productAnalytics.upsert({
+            where: { productId },
+            create: {
+              productId,
+              shopId,
+              purchases: quantity,
+              lastViewedAt: new Date(),
+            },
+            update: {
+              purchases: { increment: quantity },
+            },
+          });
+
+          const existingAnalytics = await prisma.userAnalytics.findUnique({
+            where: { userId },
+          });
+
+          const newAction = {
+            productId,
+            shopId,
+            action: "purchase",
+            timestamp: Date.now(),
+          };
+
+          const cuurrentActions = Array.isArray(existingAnalytics?.actions)
+            ? (existingAnalytics?.actions as Prisma.JsonArray)
+            : [];
+
+            if (existingAnalytics) {
+              await prisma.userAnalytics.update({
+                where: { userId },
+                data: {
+                  actions: [...cuurrentActions, newAction],
+                  lastViewedAt: new Date(),
+                },
+              });
+            } else {
+              await prisma.userAnalytics.create({
+                data: {
+                  userId,
+                  actions: [newAction],
+                  lastViewedAt: new Date(),
+                },
+              });
+            }
+        }
       }
 
       // send email for user

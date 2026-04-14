@@ -10,16 +10,72 @@ datasource db {
 
 
 model images {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  file_id String
-  url     String
-  userId  String? @unique @db.ObjectId
-  shopId  String? @unique @db.ObjectId
-  users   users?  @relation(fields: [userId], references: [id])
-  shops   shops?  @relation(fields: [shopId], references: [id])
-  productId  String? @db.ObjectId
-  product   products?  @relation(fields: [productId], references: [id])
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  file_id    String
+  url        String
+  userAvatar users[]   @relation("UserAvatar")
+  shopAvatar shops[]   @relation("ShopAvatar")
 
+  shopId     String?   @db.ObjectId
+  // Add NoAction here
+  shops      shops?    @relation("ShopImages", fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction) 
+  
+  productId  String?   @db.ObjectId
+  // Add NoAction here
+  product    products? @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  userId     String?   @db.ObjectId
+  createdAt  DateTime  @default(now())
+}
+
+
+model shops {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  bio           String?
+  category      String
+  
+  imagesId      String?     @db.ObjectId
+  // Add NoAction here
+  avatar        images?     @relation("ShopAvatar", fields: [imagesId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  coverBanner   String?
+  address       String
+  opening_hours String?
+  website       String?
+  social_links  Json[]
+  ratings       Float       @default(0)
+  reviews       shopReviews[]
+  followers     followers[]
+  sellerId      String      @unique @db.ObjectId
+  sellers       sellers     @relation(fields: [sellerId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  products      products[]
+  isDeleted     Boolean     @default(false)
+  deletedAt     DateTime? 
+  
+  images        images[]    @relation("ShopImages")
+  orders        orders[]
+}
+
+model users {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String      @unique
+  role        String      @default("user")
+  password    String?
+  following   String[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  shopReviews shopReviews[]
+  
+  // Look for these lines specifically
+  imagesId    String?     @db.ObjectId
+  avatar      images?     @relation("UserAvatar", fields: [imagesId], references: [id])
+  
+  followings  followers[]
+  orders      orders[]
 }
 
 model shopReviews {
@@ -34,37 +90,41 @@ model shopReviews {
   shops shops? @relation(fields: [shopsId], references: [id])
 }
 
-model users {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
-  password  String?
-  following String[]
-  avatar    images?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  shopReviews shopReviews[]
+
+model followers {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    userId String @db.ObjectId
+    shopsId String @db.ObjectId
+
+    user users @relation(fields: [userId], references: [id])
+    shops shops? @relation(fields: [shopsId], references: [id])
+
+    @@unique([userId, shopsId]) // one user can follow the same shop only once
 }
 
-model shops {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  bio        String?
-  category   String
-  avater      images?
-  coverBanner String?
-  address   String
-  opening_hours String?
-  website   String?
-  social_links Json[]
-  ratings Float @default(0)
-  reviews shopReviews[]
-  sellerId  String @unique @db.ObjectId
-  sellers   sellers @relation(fields: [sellerId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  products products[]
+enum addressType {
+  Home
+  Work
+  Other
 }
+
+model address {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+
+  label     addressType   // Home, Work, Other
+  name      String   // Person name
+  street    String
+  city      String
+  zip       String
+  country   String
+
+  isDefault Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+}
+
+
 
 model sellers {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -77,13 +137,17 @@ model sellers {
   shop shops?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  shopId String? @db.ObjectId
+  isDeleted Boolean @default(false)
+  deletedAt DateTime? 
+  shopId String? @db.ObjectId // to do there is no this field in riginal (i am not sure)
 }
 
 model site_config {
     id          String   @id @default(auto()) @map("_id") @db.ObjectId
     categories String[]
     subCategories Json
+    logo String?
+    banner String?
 }
 
 model discount_codes {
@@ -127,7 +191,7 @@ model products {
   custom_specifications Json?
   custom_properties Json
   isDeleted Boolean? @default(false)
-  cashOnDelivery Boolean @default(false)
+  cashOnDelivery String?
   discount_codes String[] @db.ObjectId
   status productStatus @default(Active)
   deletedAt DateTime?
@@ -137,3 +201,79 @@ model products {
   shop shops @relation(fields: [shopId], references: [id])
   totalSales  Int      @default(0)
 }
+
+model productAnalytics {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  productId String @unique
+  shopId String
+  views Int @default(0)
+  cartAdds Int @default(0)
+  wishListAdds Int @default(0)
+  purchases Int @default(0)
+  lastViewedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model shopAnalytics {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+
+totalVisitors Int @default(0)
+countryStats Json? // Store aggregate country data {"US": 20, "IN": 50}
+cityStats Json?
+deviceStats Json?
+lastVisitedAt DateTime
+createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model uniqueShopVisitors {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    shopId String @db.ObjectId
+    userId String @db.ObjectId
+    visitedAt DateTime @default(now())
+
+    @@unique([shopId, userId])
+}
+
+model orders {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    userId String @db.ObjectId
+    user users @relation(fields: [userId], references: [id])
+    shopId String @db.ObjectId
+    shop shops @relation(fields: [shopId], references: [id])
+    total Float
+    shippingAddressId String?
+    couponCode String?
+    discountAmount Float?
+    status String
+    deliveryStatus String @default("Ordered")
+    items orderItems[] @relation("OrderItemsRelation")
+    createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model orderItems {
+      id String @id @default(auto()) @map("_id") @db.ObjectId
+    orderId String @db.ObjectId
+    productId String
+    quantity Int
+    price Float
+    selectedOptions Json?
+
+    orders orders @relation(fields: [orderId], references: [id], name: "OrderItemsRelation")
+        createdAt DateTime @default(now())
+
+}
+
+// model notifications {
+//       id String @id @default(auto()) @map("_id") @db.ObjectId
+//       creatorId String @db.ObjectId
+//       recieverId String
+//       redirect_link String?
+//       title String
+// }
+
+
+
+// to do users images two schema check

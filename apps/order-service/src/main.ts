@@ -9,7 +9,7 @@ import { createOrder } from "./controllers/order.controller";
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,
   }),
@@ -24,6 +24,7 @@ app.post(
   },
   createOrder,
 );
+
 app.use(express.json());
 app.use(cookieParser());
 

@@ -24,7 +24,7 @@ router.post(
 router.get("/get-seller-orders", isAuthenticated, isSeller, getSellerOrders);
 router.get("/get-order-details/:id", isAuthenticated, getOrderDetails);
 router.put(
-  "/update-order-status/:orderId",
+  "/update-status/:orderId",
   isAuthenticated,
   isSeller,
   updateDeliveryStatus,

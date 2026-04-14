@@ -15,9 +15,12 @@
   "private": true,
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@stripe/react-stripe-js": "^6.1.0",
+    "@stripe/stripe-js": "^9.1.0",
     "@tanstack/react-query": "^5.96.2",
     "axios": "^1.14.0",
     "bcryptjs": "^3.0.3",
+    "canvas-confetti": "^1.9.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
