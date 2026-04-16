@@ -3,6 +3,7 @@ import express, { Router } from "express";
 import {
   createPaymentIntent,
   createPaymentSession,
+  getAdminOrders,
   getOrderDetails,
   getSellerOrders,
   getUserOrders,
@@ -10,7 +11,7 @@ import {
   verifyCouponCode,
   verifyingPaymentSession,
 } from "../controllers/order.controller";
-import { isSeller } from "@packages/middleware/authorizeRoles";
+import { isAdmin, isSeller } from "@packages/middleware/authorizeRoles";
 
 const router: Router = express.Router();
 
@@ -31,5 +32,6 @@ router.put(
 );
 router.put("/verify-coupon", isAuthenticated, verifyCouponCode);
 router.get("/get-user-orders", isAuthenticated, getUserOrders);
+router.get("/get-admin-orders", isAuthenticated, isAdmin, getAdminOrders);
 
 export default router;

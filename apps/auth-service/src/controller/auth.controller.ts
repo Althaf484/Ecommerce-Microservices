@@ -9,7 +9,11 @@ import {
   verifyOtp,
 } from "../utils/auth.helper";
 import prisma from "@packages/libs/prisma";
-import { AuthError, NotFoundError, ValidationError } from "@packages/error-handler";
+import {
+  AuthError,
+  NotFoundError,
+  ValidationError,
+} from "@packages/error-handler";
 import bcrypt from "bcryptjs";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { setCookie } from "../utils/cookies/setCookie";
@@ -617,6 +621,151 @@ export const getUserAddresses = async (
     res.status(200).json({
       success: true,
       addresses,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// change user password
+export const updateUserPassword = async (
+  req: any,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return next(new ValidationError("Missing required fields!"));
+    }
+
+    if (newPassword !== confirmPassword) {
+      return next(new ValidationError("Passwords do not match!"));
+    }
+
+    if (currentPassword === newPassword) {
+      return next(
+        new ValidationError(
+          "New password must be different from old password!",
+        ),
+      );
+    }
+
+    const user = await prisma.users.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user || !user.password) {
+      return next(new AuthError("user not found or password not set"));
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isPasswordCorrect) {
+      return next(new AuthError("current password is incorrect!"));
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    await prisma.users.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully!",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// login admin
+export const loginAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return next(new ValidationError("Missing required fields!"));
+    }
+    const user = await prisma.users.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      return next(new AuthError("user not found"));
+    }
+
+    //verify password
+    const isMatch = await bcrypt.compare(password, user.password!);
+
+    if (!isMatch) {
+      return next(new AuthError("Invalid email or password!"));
+    }
+
+    const isAdmin = user.role === "admin";
+
+    if (!isAdmin) {
+      sendLog({
+        type: "error",
+        message: `Admin email failed for ${email} - not an admin`,
+        source: "auth-service",
+      });
+      return next(new AuthError("You are not an admin!"));
+    }
+
+    sendLog({
+      type: "success",
+      message: `Admin email success for ${email}`,
+      source: "auth-service",
+    });
+
+    res.clearCookie("seller-access-token");
+    res.clearCookie("seller-refresh-token");
+
+    // Generate access and refresh tokens
+    const accessToken = jwt.sign(
+      { id: user.id, role: "admin" },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      { expiresIn: "15m" },
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user.id, role: "admin" },
+      process.env.REFRESH_TOKEN_SECRET as string,
+      { expiresIn: "7d" },
+    );
+
+    setCookie(res, "refresh_token", refreshToken);
+    setCookie(res, "access_token", accessToken);
+
+    res.status(200).json({
+      success: true,
+      message: "Admin logged in successfully!",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
     });
   } catch (error) {
     return next(error);

@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
   res.send({ message: "Welcome to admin-service!" });
 });
 
-app.use("/admin", router);
+app.use("/api", router);
 
 app.use(errorMiddleware);
 

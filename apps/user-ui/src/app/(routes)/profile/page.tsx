@@ -4,6 +4,8 @@ import useUser from "apps/user-ui/src/hooks/useUser";
 import QuickActionCard from "apps/user-ui/src/shared/components/cards/quick-action.card";
 import StatCard from "apps/user-ui/src/shared/components/cards/stat.card";
 import ShippingAddressSection from "apps/user-ui/src/shared/components/shippingAddress";
+import OrdersTable from "apps/user-ui/src/shared/components/tables/orders-table";
+import ChangePassword from "apps/user-ui/src/shared/components/change-password/index";
 import axiosInstance from "apps/user-ui/src/utils/axiosInstance";
 import {
   Clock,
@@ -164,9 +166,11 @@ const page = () => {
               </div>
             ) : activeTab === "Shipping Address" ? (
               <ShippingAddressSection />
-            ) : (
-              <></>
-            )}
+            ) : activeTab === "My Orders" ? (
+              <OrdersTable />
+            ) : activeTab === "Change Password" ? (
+              <ChangePassword />
+            ) : null}
           </div>
 
           {/* Right Quick Panel */}

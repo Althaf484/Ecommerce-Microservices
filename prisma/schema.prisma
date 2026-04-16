@@ -266,13 +266,18 @@ model orderItems {
 
 }
 
-// model notifications {
-//       id String @id @default(auto()) @map("_id") @db.ObjectId
-//       creatorId String @db.ObjectId
-//       recieverId String
-//       redirect_link String?
-//       title String
-// }
+model notifications {
+      id String @id @default(auto()) @map("_id") @db.ObjectId
+      creatorId String @db.ObjectId
+      recieverId String
+      redirect_link String?
+      title String
+      message String
+      status String @default("Unread")
+
+      createdAt DateTime @default(now())
+      updatedAt DateTime @updatedAt
+}
 
 
 

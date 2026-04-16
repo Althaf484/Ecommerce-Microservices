@@ -12,12 +12,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}',
-    '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
-//     ...createGlobPatternsForDependencies(__dirname)
+    "./{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}",
+    "../admin-ui/src/**/*.{ts,tsx,js,jsx,html}",
+    "../../packages/**/*.{ts,tsx,js,jsx,html}",
+    "!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}",
+    //     ...createGlobPatternsForDependencies(__dirname)
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        Poppins: ["var(--font-poppins)"],
+      },
+    },
   },
   plugins: [],
 };
