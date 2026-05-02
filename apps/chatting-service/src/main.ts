@@ -1,7 +1,6 @@
 import express from "express";
 import cookirParser from "cookie-parser";
 import { createWebSocketServer } from "./websocket";
-import { error } from "console";
 import { startConsumer } from "./chat-message.consumer";
 import router from "./routes/chatting.route";
 
