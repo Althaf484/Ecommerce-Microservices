@@ -314,5 +314,20 @@ model message {
   @@unique([conversationId, senderId, content, createdAt])
 }
 
+model userAnalytics {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique
+  country String?
+  city String?
+  device String?
+  lastVisited DateTime
+  actions Json? // Store aggregate action data {"viewed": 20, "added_to_cart": 5}
+  recommendations Json? // Store personalized recommendations as JSON
+  lastTrained DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 // to do users images two schema check
